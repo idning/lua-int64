@@ -199,7 +199,11 @@ tostring(lua_State *L) {
 	uintptr_t n = (uintptr_t)lua_touserdata(L,1);
 	if (lua_gettop(L) == 1) {
 		luaL_Buffer b;
+#if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502
+		luaL_buffinit(L, &b);
+#else
 		luaL_buffinitsize(L , &b , 28);
+#endif
 		luaL_addstring(&b, "int64: 0x");
 		int i;
 		bool strip = true;
@@ -231,7 +235,11 @@ tostring(lua_State *L) {
 		case 10: {
 			int64_t dec = (int64_t)n;
 			luaL_Buffer b;
+#if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502
+			luaL_buffinit(L, &b);
+#else
 			luaL_buffinitsize(L , &b , 28);
+#endif
 			if (dec<0) {
 				luaL_addchar(&b, '-');
 				dec = -dec;
@@ -294,7 +302,11 @@ make_mt(lua_State *L) {
 		{ "__tostring", tostring },
 		{ NULL, NULL },
 	};
+#if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502
+	luaL_register(L, "int64", lib);
+#else
 	luaL_newlib(L,lib);
+#endif
 }
 
 int
